@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connect 4 vs AlphaZero</title>
+<style>
+:root{--bg:#f6f7f9;--fg:#1c1f26;--muted:#6b7280;--board:#2347a6;--hole:#e9edf7;--x:#e5484d;--o:#f5c518;--card:#fff;--bar:#8aa4e6}
+@media(prefers-color-scheme:dark){:root{--bg:#14161b;--fg:#e8eaf0;--muted:#9aa3b2;--board:#2f5bd1;--hole:#1b2030;--card:#1d2028;--bar:#5c7bd6}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,sans-serif;display:flex;justify-content:center}
+main{width:100%;max-width:560px;padding:20px 16px}
+h1{font-size:1.3rem;margin:0 0 4px}p.sub{margin:0 0 16px;color:var(--muted);font-size:.9rem}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+select,button{font:inherit;padding:8px 12px;border-radius:8px;border:1px solid var(--muted);background:var(--card);color:var(--fg)}
+button{cursor:pointer}button.primary{background:var(--board);color:#fff;border-color:var(--board)}
+#status{min-height:1.6em;font-weight:600;margin:6px 0 10px}
+.bars{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;height:56px;align-items:end;padding:0 8px;margin-bottom:2px}
+.bars div{background:var(--bar);border-radius:4px 4px 0 0;min-height:2px;position:relative}
+.bars span{position:absolute;top:-16px;left:0;right:0;text-align:center;font-size:.7rem;color:var(--muted)}
+.board{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;background:var(--board);padding:8px;border-radius:12px}
+.cell{aspect-ratio:1;border-radius:50%;background:var(--hole);cursor:pointer;transition:background .15s}
+.cell.X{background:var(--x)}.cell.O{background:var(--o)}.cell.win{box-shadow:0 0 0 4px #fff inset}
+.board.off .cell{cursor:default}
+.info{margin-top:14px;padding:12px;background:var(--card);border-radius:10px;font-size:.9rem;color:var(--muted)}
+.meter{height:10px;background:var(--hole);border-radius:5px;overflow:hidden;margin:6px 0}
+.meter i{display:block;height:100%;background:var(--o)}
+</style></head><body><main>
+<h1>Connect 4 vs AlphaZero</h1>
+<p class="sub">You are red (X). A small neural network + Monte-Carlo tree search, trained only by self-play.</p>
+<div class="controls">
+  <select id="sims" aria-label="AI strength">
+    <option value="10">Easy (10 simulations)</option><option value="100" selected>Medium (100)</option>
+    <option value="800">Hard (800)</option></select>
+  <select id="first" aria-label="Who starts"><option value="human">I start</option><option value="ai">AI starts</option></select>
+  <button class="primary" id="new">New game</button>
+</div>
+<div id="status"></div>
+<div class="bars" id="bars" aria-label="Search visit distribution"></div>
+<div class="board" id="board"></div>
+<div class="info"><div>AI's estimate of its own winning chances: <b id="pct">–</b></div>
+<div class="meter"><i id="meter" style="width:50%"></i></div>
+<div>Bars above the board show how the AI spread its search over each column on its last move.</div></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let moves=[],busy=false,state=null,humanIsX=true;
+async function api(path,body){const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error((await r.json()).error);return r.json();}
+function render(){const b=$('board');b.innerHTML='';b.className='board'+(busy||state.status!=='playing'?' off':'');
+  const win=new Set(state.win.map(([r,c])=>r+','+c));
+  state.board.forEach((row,r)=>row.forEach((v,c)=>{const d=document.createElement('div');
+    d.className='cell'+(v==='X'?' X':v==='O'?' O':'')+(win.has(r+','+c)?' win':'');d.onclick=()=>play(c);b.appendChild(d);}));
+  const me=humanIsX?'X':'O';let s;
+  if(state.status==='playing')s=busy?'AI is thinking…':(state.to_move===me?'Your move':'');
+  else if(state.status==='draw')s='Draw.';else s=state.status===me?'You win!':'The AI wins.';
+  $('status').textContent=s;}
+async function refresh(){state=await api('/api/state',{moves});render();}
+async function aiTurn(){if(state.status!=='playing')return;busy=true;render();
+  const t0=performance.now();const r=await api('/api/ai',{moves,sims:+$('sims').value});
+  const wait=Math.max(0,350-(performance.now()-t0));await new Promise(k=>setTimeout(k,wait));
+  moves.push(r.move);showStats(r);busy=false;await refresh();}
+function showStats(r){const bars=$('bars');bars.innerHTML='';const mx=Math.max(...r.visits);
+  r.visits.forEach(p=>{const d=document.createElement('div');d.style.height=(p/mx*100)+'%';
+    d.innerHTML='<span>'+(p>=0.01?Math.round(p*100)+'%':'')+'</span>';bars.appendChild(d);});
+  const w=(r.value+1)/2*100;$('pct').textContent=Math.round(w)+'%';$('meter').style.width=w+'%';}
+async function play(c){if(busy||state.status!=='playing'||!state.legal.includes(c))return;
+  const me=humanIsX?'X':'O';if(state.to_move!==me)return;
+  moves.push(c);await refresh();await aiTurn();}
+async function newGame(){moves=[];busy=false;humanIsX=$('first').value==='human';
+  $('bars').innerHTML='';$('pct').textContent='–';$('meter').style.width='50%';await refresh();if(!humanIsX)await aiTurn();}
+$('new').onclick=newGame;newGame();
+</script></body></html>
