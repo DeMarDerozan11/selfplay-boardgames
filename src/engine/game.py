@@ -2,6 +2,8 @@
 from abc import ABC, abstractmethod
 from typing import Hashable, Optional
 
+import numpy as np
+
 
 class Game(ABC):
     """A two-player, zero-sum, perfect-information game with immutable states.
@@ -37,3 +39,12 @@ class Game(ABC):
     def heuristic(self, state) -> int:
         """Cheap non-terminal evaluation for the player to move (higher = better)."""
         return 0
+
+    # Hooks used by the neural network (AlphaZero).
+    def encode(self, state) -> np.ndarray:
+        """float32 array (channels, height, width), from the point of view of the player to move."""
+        raise NotImplementedError
+
+    def symmetries(self, planes: np.ndarray, pi: np.ndarray) -> list:
+        """Equivalent (planes, policy) pairs for data augmentation; includes the identity."""
+        return [(planes, pi)]

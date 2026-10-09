@@ -8,6 +8,8 @@ Bit layout: column c, row r (0 = bottom) -> bit c*7 + r. Row 6 of each column is
 always-empty sentinel so that shifted alignments never wrap into the next column.
 Same encoding as Pascal Pons' solver, which makes cross-checking easy.
 """
+import numpy as np
+
 from src.engine.game import Game
 
 W, H = 7, 6
@@ -81,6 +83,20 @@ class Connect4(Game):
             elif a == 0:
                 score -= WINDOW_SCORE[b]
         return score
+
+    def encode(self, state):
+        """Planes: [stones of player to move, stones of opponent], each 6 x 7 (row 0 = bottom)."""
+        pos, mask, _ = state
+        out = np.zeros((2, H, W), np.float32)
+        for plane, bits in ((0, pos), (1, pos ^ mask)):
+            for c in range(W):
+                col = (bits >> (c * H1)) & ((1 << H) - 1)
+                for r in range(H):
+                    out[plane, r, c] = (col >> r) & 1
+        return out
+
+    def symmetries(self, planes, pi):
+        return [(planes, pi), (planes[:, :, ::-1].copy(), pi[::-1].copy())]  # mirror left-right
 
     def cell(self, state, c, r):
         """'X' = first player, 'O' = second player, '.' empty."""

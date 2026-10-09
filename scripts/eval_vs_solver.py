@@ -12,35 +12,15 @@ from src.games.connect4 import Connect4
 from src.players.minimax import MinimaxPlayer
 from src.players.mcts import MCTSPlayer
 from src.players.random_player import RandomPlayer
-from src.solver_ref import solve_many, best_value, sign
+from src.solver_ref import solve_many, best_value, sign, sample_positions, replay as _replay
 
 g = Connect4()
-
-
-def sample_positions(n, min_ply=6, max_ply=24, seed=123):
-    rng, out = random.Random(seed), set()
-    while len(out) < n:
-        k, s, seq = rng.randint(min_ply, max_ply), g.initial_state(), []
-        for _ in range(k):
-            if g.result(s) is not None:
-                break
-            m = rng.choice(g.legal_moves(s)); seq.append(m); s = g.play(s, m)
-        if g.result(s) is None and len(seq) == k:
-            out.add(tuple(seq))
-    return sorted(out)
-
-
-def replay(seq):
-    s = g.initial_state()
-    for m in seq:
-        s = g.play(s, m)
-    return s
 
 
 def score_player(player, positions, ref):
     opt = pres = n_live = 0
     for seq in positions:
-        m = player.choose(g, replay(seq))
+        m = player.choose(g, _replay(g, seq))
         sc = ref[seq]
         opt += sc[m] == best_value(sc)
         if best_value(sc) >= 0:
@@ -51,7 +31,7 @@ def score_player(player, positions, ref):
 
 if __name__ == "__main__":
     n = int(sys.argv[1]) if len(sys.argv) > 1 else 200
-    positions = sample_positions(n)
+    positions = sample_positions(g, n)
     t = time.time()
     ref = solve_many(positions)
     print(f"solved {n} positions in {time.time()-t:.0f}s", flush=True)

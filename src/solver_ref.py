@@ -6,6 +6,7 @@ opening book is slow (seconds to minutes).
 """
 import json
 import pathlib
+import random
 import subprocess
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -42,3 +43,24 @@ def best_value(scores):
 
 def sign(x):
     return (x > 0) - (x < 0)
+
+
+def sample_positions(game, n, min_ply=6, max_ply=24, seed=123):
+    """Random-prefix positions (as move tuples), fixed seed, only non-terminal ones."""
+    rng, out = random.Random(seed), set()
+    while len(out) < n:
+        k, s, seq = rng.randint(min_ply, max_ply), game.initial_state(), []
+        for _ in range(k):
+            if game.result(s) is not None:
+                break
+            m = rng.choice(game.legal_moves(s)); seq.append(m); s = game.play(s, m)
+        if game.result(s) is None and len(seq) == k:
+            out.add(tuple(seq))
+    return sorted(out)
+
+
+def replay(game, seq):
+    s = game.initial_state()
+    for m in seq:
+        s = game.play(s, m)
+    return s
