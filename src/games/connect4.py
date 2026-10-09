@@ -1,0 +1,66 @@
+"""Connect 4 (7 columns x 6 rows) on bitboards.
+
+State = (position, mask, moves):
+  position: stones of the player TO MOVE
+  mask:     stones of both players
+  moves:    number of moves played
+Bit layout: column c, row r (0 = bottom) -> bit c*7 + r. Row 6 of each column is an
+always-empty sentinel so that shifted alignments never wrap into the next column.
+Same encoding as Pascal Pons' solver, which makes cross-checking easy.
+"""
+from src.engine.game import Game
+
+W, H = 7, 6
+H1 = H + 1
+BOTTOM = sum(1 << (c * H1) for c in range(W))
+BOARD = BOTTOM * ((1 << H) - 1)
+
+
+def _has_four(p: int) -> bool:
+    for shift in (1, H1, H1 - 1, H1 + 1):  # vertical, horizontal, two diagonals
+        m = p & (p >> shift)
+        if m & (m >> (2 * shift)):
+            return True
+    return False
+
+
+class Connect4(Game):
+    num_actions = W
+
+    def initial_state(self):
+        return (0, 0, 0)
+
+    def legal_moves(self, state):
+        _, mask, _ = state
+        if self.result(state) is not None:
+            return []
+        top = 1 << (H - 1)
+        return [c for c in range(W) if not mask & (top << (c * H1))]
+
+    def play(self, state, move):
+        pos, mask, n = state
+        if mask & (1 << (H - 1) << (move * H1)):
+            raise ValueError(f"column {move} is full")
+        new_mask = mask | (mask + (1 << (move * H1)))
+        return (pos ^ mask, new_mask, n + 1)  # swap sides: new "position" = opponent's stones
+
+    def result(self, state):
+        pos, mask, n = state
+        if _has_four(pos ^ mask):  # stones of the player who just moved
+            return -1
+        return 0 if n == W * H else None
+
+    def cell(self, state, c, r):
+        """'X' = first player, 'O' = second player, '.' empty."""
+        pos, mask, n = state
+        bit = 1 << (c * H1 + r)
+        if not mask & bit:
+            return "."
+        to_move_is_first = n % 2 == 0
+        mine = bool(pos & bit)
+        return "X" if mine == to_move_is_first else "O"
+
+    def render(self, state):
+        rows = ["".join(self.cell(state, c, r) + " " for c in range(W)).rstrip()
+                for r in range(H - 1, -1, -1)]
+        return "\n".join(rows + ["-" * (2 * W - 1), " ".join(map(str, range(W)))])
