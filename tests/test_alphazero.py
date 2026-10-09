@@ -63,3 +63,12 @@ def test_self_play_labels_consistent():
             assert zs[-1] == 1 and all(zs[k] == -zs[k + 1] for k in range(T - 1))
     for planes, pi, z in ex:
         assert abs(pi.sum() - 1) < 1e-5
+
+
+def test_arena_symmetric_and_in_range():
+    from src.alphazero.arena import arena
+    a = PolicyValueNet(2, 6, 7, 7, channels=8, blocks=1)
+    s = arena(g, a, a, 10, 8, np.random.default_rng(0))
+    assert 0.0 <= s <= 1.0
+    # a perfectly weak "uniform" player must lose to a net-less search that sees wins? sanity: same net -> not extreme
+    assert 0.2 <= s <= 0.8
