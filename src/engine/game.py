@@ -28,3 +28,12 @@ class Game(ABC):
 
     @abstractmethod
     def render(self, state) -> str: ...
+
+    # Optional hooks used by search-based players. Defaults are neutral.
+    def order_moves(self, state, moves: list[int]) -> list[int]:
+        """Best-first ordering helps alpha-beta prune more."""
+        return moves
+
+    def heuristic(self, state) -> int:
+        """Cheap non-terminal evaluation for the player to move (higher = better)."""
+        return 0

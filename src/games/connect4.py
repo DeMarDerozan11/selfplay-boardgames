@@ -16,6 +16,22 @@ BOTTOM = sum(1 << (c * H1) for c in range(W))
 BOARD = BOTTOM * ((1 << H) - 1)
 
 
+def _windows():
+    out = []
+    for c in range(W):
+        for r in range(H):
+            for dc, dr in ((0, 1), (1, 0), (1, 1), (1, -1)):
+                cells = [(c + k * dc, r + k * dr) for k in range(4)]
+                if all(0 <= x < W and 0 <= y < H for x, y in cells):
+                    out.append(sum(1 << (x * H1 + y) for x, y in cells))
+    return out
+
+
+WINDOWS = _windows()  # the 69 possible lines of four
+WINDOW_SCORE = (0, 1, 4, 16)  # value of a window holding 0..3 stones of one side only
+_CENTER_FIRST = sorted(range(W), key=lambda c: abs(c - W // 2))
+
+
 def _has_four(p: int) -> bool:
     for shift in (1, H1, H1 - 1, H1 + 1):  # vertical, horizontal, two diagonals
         m = p & (p >> shift)
@@ -49,6 +65,22 @@ class Connect4(Game):
         if _has_four(pos ^ mask):  # stones of the player who just moved
             return -1
         return 0 if n == W * H else None
+
+    def order_moves(self, state, moves):
+        return sorted(moves, key=_CENTER_FIRST.index)
+
+    def heuristic(self, state):
+        """Sum over open windows (containing stones of one side only): mine minus opponent's."""
+        pos, mask, _ = state
+        opp = pos ^ mask
+        score = 0
+        for w in WINDOWS:
+            a, b = (pos & w).bit_count(), (opp & w).bit_count()
+            if b == 0:
+                score += WINDOW_SCORE[a]
+            elif a == 0:
+                score -= WINDOW_SCORE[b]
+        return score
 
     def cell(self, state, c, r):
         """'X' = first player, 'O' = second player, '.' empty."""

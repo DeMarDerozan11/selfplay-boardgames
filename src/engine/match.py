@@ -10,8 +10,8 @@ def play_game(game, first, second, verbose=False):
         turn ^= 1
         if verbose:
             print(game.render(state), "\n")
-    r = game.result(state)  # from view of player to move (players[turn])
-    return -r if turn == 0 else r
+    r = game.result(state)  # value for the player to move next, i.e. players[turn]
+    return r if turn == 0 else -r
 
 
 def wilson(k, n, z=1.96):
