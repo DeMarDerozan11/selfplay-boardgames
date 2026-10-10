@@ -183,3 +183,12 @@ def test_action_geometry_matches_resulting_board():
             cb, _, _ = decode_key(child)
             assert board[frm] and (board[frm] >> 3) == side and cb[frm] == 0 and cb[to] != 0
             assert all(cb[i] == board[i] for i in range(12) if i not in (frm, to))
+
+
+def test_alphazero_self_play_on_dobutsu():
+    from src.alphazero.net import PolicyValueNet
+    from src.alphazero.selfplay import self_play
+    net = PolicyValueNet(Dobutsu.planes, 4, 3, Dobutsu.num_actions, channels=8, blocks=1)
+    ex, stats = self_play(g, net, 4, 8, np.random.default_rng(0))
+    assert len(ex) == sum(stats["lengths"]) and all(abs(e[1].sum() - 1) < 1e-5 for e in ex)
+    assert all(e[0].shape == (16, 4, 3) and e[1].shape == (132,) for e in ex)

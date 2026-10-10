@@ -207,6 +207,27 @@ class Dobutsu(Game):
         mp[MIRROR_PERM] = pi
         return [(planes, pi), (planes[:, :, ::-1].copy(), mp)]
 
+    PIECE_VALUE = {CHICK: 10, GIRAFFE: 30, ELEPHANT: 30, LION: 0, HEN: 25}
+
+    def heuristic(self, state):
+        """Material (hand pieces count slightly less than on-board ones) plus lion progress, for the mover."""
+        board, hands, s = decode_key(state[0])
+        score = 0
+        for sq, code in enumerate(board):
+            if not code:
+                continue
+            owner, t = code >> 3, code & 7
+            v = self.PIECE_VALUE[t]
+            if t == LION:  # advancing the lion towards the far row is good, but it is also exposed
+                v = 2 * (sq // 3 if owner == 0 else 3 - sq // 3)
+            elif t == CHICK:
+                v += 3 * (sq // 3 if owner == 0 else 3 - sq // 3)
+            score += v if owner == s else -v
+        for t in range(3):
+            v = (10, 30, 30)[t] * 9 // 10
+            score += v * (hands[s][t] - hands[1 - s][t])
+        return score
+
     def render(self, state):
         board, hands, s = decode_key(state[0])
         lines = []

@@ -2,7 +2,7 @@
 import argparse, json, pathlib, sys, time
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import torch
-from src.games.connect4 import Connect4
+from src.games.registry import make_game
 from src.alphazero.net import PolicyValueNet
 from src.alphazero.search import AZPlayer
 from src.players.minimax import MinimaxPlayer
@@ -11,18 +11,23 @@ from src.players.random_player import RandomPlayer
 from src.engine.match import evaluate
 
 ap = argparse.ArgumentParser()
+ap.add_argument("--game", default="connect4", choices=["connect4", "dobutsu"])
 ap.add_argument("--run", default="main")
+ap.add_argument("--minimax-depth", type=int, default=4)
+ap.add_argument("--opponents", nargs="+", default=["random", "minimax", "mcts"])
 ap.add_argument("--iters", type=int, nargs="+", default=[0, 10, 20, 40])
 ap.add_argument("--games", type=int, default=40)
 ap.add_argument("--sims", type=int, default=100)
 a = ap.parse_args()
 torch.set_num_threads(4)
-g = Connect4()
+g, _ = make_game(a.game)
 run = pathlib.Path(__file__).resolve().parents[1] / "runs" / a.run
 out = run / "match_results.jsonl"
 for it in a.iters:
     net = PolicyValueNet.from_checkpoint(run / f"ckpt_{it:03d}.pt")
-    for opp in (RandomPlayer(0), MinimaxPlayer(4, seed=0), MCTSPlayer(500, seed=0)):
+    ref = {"random": lambda: RandomPlayer(0), "minimax": lambda: MinimaxPlayer(a.minimax_depth, seed=0),
+           "mcts": lambda: MCTSPlayer(500, seed=0)}
+    for opp in (ref[o]() for o in a.opponents):
         t = time.time()
         r = evaluate(g, AZPlayer(net, a.sims), opp, a.games)
         rec = dict(run=a.run, iter=it, sims=a.sims, opponent=opp.name, games=a.games, **{k: r[k] for k in ("wins", "draws", "losses", "score")}, ci95=r["ci95"])

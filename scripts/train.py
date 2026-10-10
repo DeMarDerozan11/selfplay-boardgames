@@ -9,7 +9,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from src.games.connect4 import Connect4
+from src.games.registry import make_game
 from src.alphazero.net import PolicyValueNet
 from src.alphazero.selfplay import self_play
 from src.alphazero.arena import arena
@@ -17,7 +17,9 @@ from src.alphazero.search import best_moves
 from src.solver_ref import solve_many, sample_positions, replay, best_value, sign
 
 ap = argparse.ArgumentParser()
+ap.add_argument("--game", default="connect4", choices=["connect4", "dobutsu"])
 ap.add_argument("--name", default="run")
+ap.add_argument("--dirichlet", type=float, default=1.0, help="Dirichlet noise alpha at the root in self-play")
 ap.add_argument("--iters", type=int, default=20)
 ap.add_argument("--games", type=int, default=64, help="self-play games per iteration")
 ap.add_argument("--sims", type=int, default=100, help="MCTS simulations per move in self-play")
@@ -42,19 +44,23 @@ out = pathlib.Path(__file__).resolve().parents[1] / "runs" / a.name
 out.mkdir(parents=True, exist_ok=True)
 (out / "config.json").write_text(json.dumps(vars(a), indent=1))
 
-game = Connect4()
-net = PolicyValueNet(2, 6, 7, 7, a.channels, a.blocks)
+game, shape = make_game(a.game)
+net = PolicyValueNet(**shape, channels=a.channels, blocks=a.blocks)
 opt = torch.optim.Adam(net.parameters(), lr=a.lr, weight_decay=1e-4)
 best = copy.deepcopy(net).eval()   # network that generates self-play data (gated)
 buffer = collections.deque(maxlen=a.buffer)
 print(f"params: {sum(p.numel() for p in net.parameters()):,}", flush=True)
 
-positions = sample_positions(game, a.eval_positions)
-ref = solve_many(positions)  # cached exact-solver scores
-states = [replay(game, s) for s in positions]
+HAS_SOLVER = a.game == "connect4"
+if HAS_SOLVER:
+    positions = sample_positions(game, a.eval_positions)
+    ref = solve_many(positions)  # cached exact-solver scores
+    states = [replay(game, s) for s in positions]
 
 
 def solver_metrics(sims):
+    if not HAS_SOLVER:
+        return float("nan"), float("nan")
     moves = best_moves(game, best, states, sims)
     opt_ = pres = live = 0
     for seq, m in zip(positions, moves):
@@ -98,7 +104,7 @@ for it in range(1, a.iters + 1):
     lr = a.lr * (a.lr_final_frac + (1 - a.lr_final_frac) * 0.5 * (1 + math.cos(math.pi * frac)))
     for grp in opt.param_groups:
         grp['lr'] = lr
-    examples, stats = self_play(game, best, a.games, a.sims, rng)
+    examples, stats = self_play(game, best, a.games, a.sims, rng, noise=(0.25, a.dirichlet))
     t_sp = time.time() - t0
     for planes, pi, z in examples:                      # augment with the mirror image
         for pl, p_ in game.symmetries(planes, pi):
