@@ -23,8 +23,9 @@
 
 typedef uint64_t u64;
 typedef uint8_t u8;
-static const int BITS = 26;                 // hash table has 2^26 slots (about 50M canonical positions)
-static const u64 NSLOT = 1ULL << BITS, MASK = NSLOT - 1;
+static int BITS = 27;                       // hash table has 2^BITS slots (set with the 3rd argument)
+static u64 NSLOT = 1ULL << 27, MASK = NSLOT - 1;
+static u64 stored_count = 0;                // number of occupied slots (to detect a full table)
 static const u64 HMUL = 0x9E3779B97F4A7C15ULL;
 
 // cell code = type + 8*owner ; types: 1 chick, 2 giraffe, 3 elephant, 4 lion, 5 hen
@@ -128,7 +129,7 @@ static int term(const Pos& p) {
 static u64* keys;
 static u8* val;
 
-static inline u64 slot_of(u64 k) { return (k * HMUL) >> (64 - BITS); }
+static inline u64 slot_of(u64 k) { return (k * HMUL) >> (64 - BITS); }  // note: Python lookup must use the same BITS
 static long find(u64 k) {
     for (u64 i = slot_of(k);; i = (i + 1) & MASK) {
         if (keys[i] == k) return (long)i;
@@ -138,7 +139,13 @@ static long find(u64 k) {
 static bool insert(u64 k, u8 v) {  // returns true if newly inserted
     for (u64 i = slot_of(k);; i = (i + 1) & MASK) {
         if (keys[i] == k) return false;
-        if (!keys[i]) { keys[i] = k; val[i] = v; return true; }
+        if (!keys[i]) {
+            if (++stored_count > NSLOT - NSLOT / 8) {  // above 87.5% load: linear probing degrades, stop cleanly
+                fprintf(stderr, "hash table is full (%llu entries): rerun with a larger size\n", (unsigned long long)stored_count);
+                exit(2);
+            }
+            keys[i] = k; val[i] = v; return true;
+        }
     }
 }
 
@@ -177,6 +184,7 @@ static void cmd_solve(const char* out) {
     insert(canon(encode(initial())), 1);
     // 1. enumerate all reachable non-terminal positions, level by level (val = level + 1)
     long total = 1, stuck = 0;
+    fprintf(stderr, "table: 2^%d slots = %.0f MB\n", BITS, NSLOT * 9 / 1e6);
     for (int L = 0; L < 250; L++) {
         long added = 0;
         for (u64 i = 0; i < NSLOT; i++) {
@@ -252,6 +260,7 @@ static void cmd_solve(const char* out) {
 }
 
 int main(int argc, char** argv) {
+    if (argc >= 4) { BITS = atoi(argv[3]); NSLOT = 1ULL << BITS; MASK = NSLOT - 1; }
     if (argc >= 3 && !strcmp(argv[1], "solve")) cmd_solve(argv[2]);
     else if (argc >= 2 && !strcmp(argv[1], "children")) cmd_children();
     else { fprintf(stderr, "usage: %s solve <out.tb> | children\n", argv[0]); return 1; }
