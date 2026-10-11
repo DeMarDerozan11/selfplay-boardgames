@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" width="760" font-family="system-ui,sans-serif" font-size="11">
+<rect width="760" height="340" fill="#fff"/>
+<text x="56" y="20" font-size="13" font-weight="600" fill="#111">Connect 4 ablations: score after 20 iterations (dots = seeds)</text>
+<line x1="56" x2="750" y1="230.0" y2="230.0" stroke="#e5e7eb"/><text x="50" y="234.0" text-anchor="end" fill="#444">0.0</text>
+<line x1="56" x2="750" y1="190.8" y2="190.8" stroke="#e5e7eb"/><text x="50" y="194.8" text-anchor="end" fill="#444">0.2</text>
+<line x1="56" x2="750" y1="151.6" y2="151.6" stroke="#e5e7eb"/><text x="50" y="155.6" text-anchor="end" fill="#444">0.4</text>
+<line x1="56" x2="750" y1="112.4" y2="112.4" stroke="#e5e7eb"/><text x="50" y="116.4" text-anchor="end" fill="#444">0.6</text>
+<line x1="56" x2="750" y1="73.2" y2="73.2" stroke="#e5e7eb"/><text x="50" y="77.2" text-anchor="end" fill="#444">0.8</text>
+<line x1="56" x2="750" y1="34.0" y2="34.0" stroke="#e5e7eb"/><text x="50" y="38.0" text-anchor="end" fill="#444">1.0</text>
+<rect x="79.8" y="194.6" width="30" height="35.4" fill="#1f5fbf" opacity=".35"/>
+<circle cx="87.8" cy="123.8" r="2.8" fill="#1f5fbf"/>
+<circle cx="94.8" cy="230.0" r="2.8" fill="#1f5fbf"/>
+<circle cx="101.8" cy="230.0" r="2.8" fill="#1f5fbf"/>
+<rect x="115.8" y="187.5" width="30" height="42.5" fill="#d4600a" opacity=".35"/>
+<circle cx="123.8" cy="184.3" r="2.8" fill="#d4600a"/>
+<circle cx="130.8" cy="208.8" r="2.8" fill="#d4600a"/>
+<circle cx="137.8" cy="169.6" r="2.8" fill="#d4600a"/>
+<text x="113.8" y="254" text-anchor="middle" fill="#222" transform="rotate(25 113.8 254)">25 simulations</text>
+<rect x="195.5" y="159.8" width="30" height="70.2" fill="#1f5fbf" opacity=".35"/>
+<circle cx="203.5" cy="197.3" r="2.8" fill="#1f5fbf"/>
+<circle cx="210.5" cy="145.1" r="2.8" fill="#1f5fbf"/>
+<circle cx="217.5" cy="136.9" r="2.8" fill="#1f5fbf"/>
+<rect x="231.5" y="158.7" width="30" height="71.3" fill="#d4600a" opacity=".35"/>
+<circle cx="239.5" cy="146.7" r="2.8" fill="#d4600a"/>
+<circle cx="246.5" cy="145.1" r="2.8" fill="#d4600a"/>
+<circle cx="253.5" cy="184.3" r="2.8" fill="#d4600a"/>
+<text x="229.5" y="254" text-anchor="middle" fill="#222" transform="rotate(25 229.5 254)">100 simulations, net 64x3</text>
+<rect x="311.2" y="146.2" width="30" height="83.8" fill="#1f5fbf" opacity=".35"/>
+<circle cx="319.2" cy="143.4" r="2.8" fill="#1f5fbf"/>
+<circle cx="326.2" cy="130.4" r="2.8" fill="#1f5fbf"/>
+<circle cx="333.2" cy="164.7" r="2.8" fill="#1f5fbf"/>
+<rect x="347.2" y="141.8" width="30" height="88.2" fill="#d4600a" opacity=".35"/>
+<circle cx="355.2" cy="161.4" r="2.8" fill="#d4600a"/>
+<circle cx="362.2" cy="136.9" r="2.8" fill="#d4600a"/>
+<circle cx="369.2" cy="127.1" r="2.8" fill="#d4600a"/>
+<text x="345.2" y="254" text-anchor="middle" fill="#222" transform="rotate(25 345.2 254)">300 simulations</text>
+<rect x="426.8" y="158.7" width="30" height="71.3" fill="#1f5fbf" opacity=".35"/>
+<circle cx="434.8" cy="153.2" r="2.8" fill="#1f5fbf"/>
+<circle cx="441.8" cy="109.1" r="2.8" fill="#1f5fbf"/>
+<circle cx="448.8" cy="213.7" r="2.8" fill="#1f5fbf"/>
+<rect x="462.8" y="165.8" width="30" height="64.2" fill="#d4600a" opacity=".35"/>
+<circle cx="470.8" cy="163.0" r="2.8" fill="#d4600a"/>
+<circle cx="477.8" cy="164.7" r="2.8" fill="#d4600a"/>
+<circle cx="484.8" cy="169.6" r="2.8" fill="#d4600a"/>
+<text x="460.8" y="254" text-anchor="middle" fill="#222" transform="rotate(25 460.8 254)">net 16x1</text>
+<rect x="542.5" y="178.8" width="30" height="51.2" fill="#1f5fbf" opacity=".35"/>
+<circle cx="550.5" cy="166.3" r="2.8" fill="#1f5fbf"/>
+<circle cx="557.5" cy="208.8" r="2.8" fill="#1f5fbf"/>
+<circle cx="564.5" cy="161.4" r="2.8" fill="#1f5fbf"/>
+<rect x="578.5" y="151.1" width="30" height="78.9" fill="#d4600a" opacity=".35"/>
+<circle cx="586.5" cy="167.9" r="2.8" fill="#d4600a"/>
+<circle cx="593.5" cy="128.7" r="2.8" fill="#d4600a"/>
+<circle cx="600.5" cy="156.5" r="2.8" fill="#d4600a"/>
+<text x="576.5" y="254" text-anchor="middle" fill="#222" transform="rotate(25 576.5 254)">net 32x2</text>
+<rect x="658.2" y="71.6" width="30" height="158.4" fill="#1f5fbf" opacity=".35"/>
+<circle cx="666.2" cy="79.7" r="2.8" fill="#1f5fbf"/>
+<circle cx="673.2" cy="47.1" r="2.8" fill="#1f5fbf"/>
+<circle cx="680.2" cy="87.9" r="2.8" fill="#1f5fbf"/>
+<rect x="694.2" y="87.4" width="30" height="142.6" fill="#d4600a" opacity=".35"/>
+<circle cx="702.2" cy="81.4" r="2.8" fill="#d4600a"/>
+<circle cx="709.2" cy="102.6" r="2.8" fill="#d4600a"/>
+<circle cx="716.2" cy="78.1" r="2.8" fill="#d4600a"/>
+<text x="692.2" y="254" text-anchor="middle" fill="#222" transform="rotate(25 692.2 254)">trained on minimax-2 games</text>
+<rect x="56" y="318" width="12" height="12" fill="#1f5fbf" opacity=".5"/><text x="73" y="328" fill="#222">vs minimax depth 4</text>
+<rect x="206" y="318" width="12" height="12" fill="#d4600a" opacity=".5"/><text x="223" y="328" fill="#222">vs MCTS 500 simulations</text></svg>

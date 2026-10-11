@@ -22,8 +22,9 @@ confidence intervals, and the limitations are listed explicitly at the end.
 Score = wins + half of the draws, over all games; the starting player alternates every game. The AI uses
 100 MCTS simulations per move; the network has about 230k parameters and was trained for 40 iterations
 (about 50 min for Connect 4, about 100 min for Dobutsu Shogi). A network that has not been trained scores 0%
-against both Connect 4 references, so the learning is real, but the Dobutsu Shogi AI is **not** better than
-a depth-8 minimax (see [Limitations](#limitations)).
+against both Connect 4 references, so the learning is real. Two results temper the claims: the Dobutsu Shogi AI is **not**
+better than a depth-8 minimax, and in a short-budget ablation a network trained by *imitating* a depth-2 minimax beat
+self-play (see [Ablations](#ablations-connect-4) and [Limitations](#limitations)).
 
 ## Quick start
 
@@ -147,6 +148,44 @@ moves) and hardly moves after iteration 10. It measures random positions, not st
 
 ![Connect 4 solver metric](docs/img/c4_solver_curve.svg)
 
+### Ablations (Connect 4)
+
+Three questions, each with 3 seeds. To fit the whole grid in a few hours, every run uses a shorter protocol than
+the main run above: **20 iterations x 64 games** (instead of 40 x 100), 150 gradient steps per iteration, arena
+gating and learning-rate decay as before. Each trained network is then played 60 games against minimax depth 4
+and 60 games against MCTS-500 (100 simulations for the AI, alternating starts). Scores are (wins + 0.5 draws) / games;
+the table gives the mean over the 3 seeds and the best and worst seed in brackets.
+
+| Configuration | Seeds | vs minimax-4: mean score (per-seed range) | vs MCTS-500: mean score (per-seed range) |
+|---|---|---|---|
+| 25 simulations | 3 | 0.18 (0.00-0.54) | 0.22 (0.11-0.31) |
+| 100 simulations, net 64x3 (reference) | 3 | 0.36 (0.17-0.47) | 0.36 (0.23-0.43) |
+| 300 simulations | 3 | 0.43 (0.33-0.51) | 0.45 (0.35-0.53) |
+| net 16x1 | 3 | 0.36 (0.08-0.62) | 0.33 (0.31-0.34) |
+| net 32x2 | 3 | 0.26 (0.11-0.35) | 0.40 (0.32-0.52) |
+| trained on minimax-2 games | 3 | 0.81 (0.72-0.93) | 0.73 (0.65-0.78) |
+
+![Ablations](docs/img/ablation.svg)
+
+What can and cannot be concluded:
+
+- **More simulations per move during self-play helps, weakly.** 25 -> 100 -> 300 simulations gives mean scores
+  0.18 -> 0.36 -> 0.43 against minimax and 0.22 -> 0.36 -> 0.45 against MCTS. The trend is monotonic but the
+  seed-to-seed spread is as large as the gaps (for example 0.00 to 0.54 for 25 simulations), so I read it as
+  "probably real, not demonstrated". Training time grows with it (about 11, 24 and 50 minutes per run).
+- **Network size: no visible effect** at this budget (0.36, 0.26, 0.36 against minimax for 16x1, 32x2 and
+  64x3). The smallest network (about 6.7 minutes per run) is as good as the reference within the noise; a bigger network
+  might need more training to pay off, which I did not test.
+- **Learning from a fixed opponent beat self-play here.** A network trained by imitation of a depth-2 minimax
+  (2,500 games of minimax against itself with 15% random moves, same network, same 3,000 gradient steps) scores
+  **0.81 against minimax-4 and 0.73 against MCTS-500, with the three seeds all above 0.65**, versus 0.36 for
+  self-play, and it needs about 5 minutes instead of 24. Caveats: the 20-iteration self-play budget is small
+  (the longer 40-iteration run reaches 0.64 and 0.67, still below imitation); the teacher is a strong tactical
+  player of the same family as one of the evaluation opponents, which favours imitation; and a teacher is not
+  available for most problems. The honest summary is that self-play's advantage (no teacher needed, no ceiling at
+  the teacher's level) is not shown by these experiments; whether self-play overtakes imitation with much more
+  training is untested.
+
 ### Dobutsu Shogi
 
 | Checkpoint | vs MCTS-500 (40 games) |
@@ -179,8 +218,10 @@ out of 20) and the AI won with both colours.
   references differ only by random tie-breaks, so the stated intervals are probably too narrow.
 - **Draws in Dobutsu Shogi** are frequent (about 29% in self-play); I did not check how many come from the
   200-ply cap rather than genuine repetitions.
-- **Not done yet:** ablations (number of simulations, network size, self-play versus learning from an
-  opponent's games) with several seeds; a Dobutsu Shogi demo (the demo is Connect 4 only).
+- **Ablations are small:** 3 seeds, 60 games per seed and opponent, shortened training (20 iterations); the
+  spread between seeds is large, so only the self-play versus imitation gap is clearly visible. They were run on
+  Connect 4 only, not on Dobutsu Shogi.
+- **Not done yet:** a Dobutsu Shogi demo (the demo is Connect 4 only).
 - The Connect 4 solver positions are random prefixes, easier than positions from real games.
 
 ## Repository layout
@@ -192,7 +233,7 @@ src/players/      random, minimax (alpha-beta + transposition table), MCTS (UCT,
 src/alphazero/    net.py, search.py (batched PUCT), selfplay.py, arena.py
 src/solver_ref.py wrapper around the external Connect 4 solver (cached results)
 src/demo/         stdlib web server + single-page UI
-scripts/          train, evaluation, solver build, figures, demo
+scripts/          train, train_from_opponent, ablate, evaluation, solver build, figures, demo
 tools/            dobutsu_solver.cpp (retrograde analysis, in progress)
 docs/             figures (SVG) and the logs behind them (JSONL)
 models/           trained Connect 4 and Dobutsu Shogi networks

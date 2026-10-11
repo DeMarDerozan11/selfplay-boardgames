@@ -64,7 +64,7 @@ for i, cfg in enumerate(ORDER):
         for k, s in enumerate(c["per_seed"]):
             svg.append(f'<circle cx="{x0 + 8 + k * 7:.1f}" cy="{y(s):.1f}" r="2.8" fill="{col}"/>')
     words = LABEL[cfg].split(" (")[0]
-    svg.append(f'<text x="{cx:.1f}" y="{H_-B_+16}" text-anchor="middle" fill="#222" transform="rotate(25 {cx:.1f} {H_-B_+16})">{words}</text>')
+    svg.append(f'<text x="{cx:.1f}" y="{H_-B_+24}" text-anchor="middle" fill="#222" transform="rotate(25 {cx:.1f} {H_-B_+24})">{words}</text>')
 svg.append(f'<rect x="{L_}" y="{H_-22}" width="12" height="12" fill="#1f5fbf" opacity=".5"/><text x="{L_+17}" y="{H_-12}" fill="#222">vs minimax depth 4</text>')
 svg.append(f'<rect x="{L_+150}" y="{H_-22}" width="12" height="12" fill="#d4600a" opacity=".5"/><text x="{L_+167}" y="{H_-12}" fill="#222">vs MCTS 500 simulations</text></svg>')
 (ROOT / "docs" / "img" / "ablation.svg").write_text("\n".join(svg))
