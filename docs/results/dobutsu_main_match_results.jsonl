@@ -1,0 +1,13 @@
+{"run": "dobutsu_main", "iter": 0, "sims": 100, "opponent": "random", "games": 20, "wins": 20, "draws": 0, "losses": 0, "score": 1.0, "ci95": [0.8388698745050667, 1.0]}
+{"run": "dobutsu_main", "iter": 0, "sims": 100, "opponent": "minimax-d3", "games": 20, "wins": 0, "draws": 0, "losses": 20, "score": 0.0, "ci95": [-1.3877787807814457e-17, 0.16113012549493322]}
+{"run": "dobutsu_main", "iter": 0, "sims": 100, "opponent": "mcts-500", "games": 20, "wins": 4, "draws": 1, "losses": 15, "score": 0.225, "ci95": [0.09593111079711927, 0.442690458225094]}
+{"run": "dobutsu_main", "iter": 40, "sims": 100, "opponent": "random", "games": 20, "wins": 20, "draws": 0, "losses": 0, "score": 1.0, "ci95": [0.8388698745050667, 1.0]}
+{"run": "dobutsu_main", "iter": 40, "sims": 100, "opponent": "minimax-d3", "games": 20, "wins": 20, "draws": 0, "losses": 0, "score": 1.0, "ci95": [0.8388698745050667, 1.0]}
+{"run": "dobutsu_main", "iter": 40, "sims": 100, "opponent": "mcts-500", "games": 20, "wins": 19, "draws": 1, "losses": 0, "score": 0.975, "ci95": [0.7995418578360503, 0.9973845229437632]}
+{"run": "dobutsu_main", "iter": 40, "sims": 100, "opponent": "minimax-d6", "games": 40, "wins": 22, "draws": 18, "losses": 0, "score": 0.775, "ci95": [0.6249660359590695, 0.8768404674532148]}
+{"run": "dobutsu_main", "iter": 40, "sims": 100, "opponent": "minimax-d8", "games": 40, "wins": 0, "draws": 12, "losses": 28, "score": 0.15, "ci95": [0.07061091708507435, 0.2907262603902003]}
+{"run": "dobutsu_main", "iter": 5, "sims": 100, "opponent": "mcts-500", "games": 40, "wins": 32, "draws": 0, "losses": 8, "score": 0.8, "ci95": [0.6524239261814333, 0.8950013502683314]}
+{"run": "dobutsu_main", "iter": 10, "sims": 100, "opponent": "mcts-500", "games": 40, "wins": 38, "draws": 0, "losses": 2, "score": 0.95, "ci95": [0.834958291820748, 0.9861796228538989]}
+{"run": "dobutsu_main", "iter": 20, "sims": 100, "opponent": "mcts-500", "games": 40, "wins": 40, "draws": 0, "losses": 0, "score": 1.0, "ci95": [0.9123754607496077, 1.0]}
+{"run": "dobutsu_main", "iter": 30, "sims": 100, "opponent": "mcts-500", "games": 40, "wins": 40, "draws": 0, "losses": 0, "score": 1.0, "ci95": [0.9123754607496077, 1.0]}
+{"run": "dobutsu_main", "iter": 40, "sims": 100, "opponent": "mcts-500", "games": 40, "wins": 38, "draws": 2, "losses": 0, "score": 0.975, "ci95": [0.8711834051199223, 0.9955732825922052]}

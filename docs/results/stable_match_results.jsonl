@@ -1,0 +1,12 @@
+{"run": "stable", "iter": 10, "sims": 100, "opponent": "random", "games": 100, "wins": 100, "draws": 0, "losses": 0, "score": 1.0, "ci95": [0.9630051925239981, 0.9999999999999999]}
+{"run": "stable", "iter": 10, "sims": 100, "opponent": "minimax-d4", "games": 100, "wins": 5, "draws": 8, "losses": 87, "score": 0.09, "ci95": [0.04807199516388488, 0.16226374696643667]}
+{"run": "stable", "iter": 10, "sims": 100, "opponent": "mcts-500", "games": 100, "wins": 40, "draws": 3, "losses": 57, "score": 0.415, "ci95": [0.3233220790538851, 0.5129670382170352]}
+{"run": "stable", "iter": 20, "sims": 100, "opponent": "random", "games": 100, "wins": 100, "draws": 0, "losses": 0, "score": 1.0, "ci95": [0.9630051925239981, 0.9999999999999999]}
+{"run": "stable", "iter": 20, "sims": 100, "opponent": "minimax-d4", "games": 100, "wins": 70, "draws": 18, "losses": 12, "score": 0.79, "ci95": [0.7001985069803768, 0.8583445046835422]}
+{"run": "stable", "iter": 20, "sims": 100, "opponent": "mcts-500", "games": 100, "wins": 47, "draws": 7, "losses": 46, "score": 0.505, "ci95": [0.4086494852829769, 0.600980566642263]}
+{"run": "stable", "iter": 30, "sims": 100, "opponent": "random", "games": 100, "wins": 100, "draws": 0, "losses": 0, "score": 1.0, "ci95": [0.9630051925239981, 0.9999999999999999]}
+{"run": "stable", "iter": 30, "sims": 100, "opponent": "minimax-d4", "games": 100, "wins": 61, "draws": 6, "losses": 33, "score": 0.64, "ci95": [0.542352199811621, 0.7272892540950986]}
+{"run": "stable", "iter": 30, "sims": 100, "opponent": "mcts-500", "games": 100, "wins": 57, "draws": 9, "losses": 34, "score": 0.615, "ci95": [0.5170570413619614, 0.7044341529185582]}
+{"run": "stable", "iter": 40, "sims": 100, "opponent": "random", "games": 100, "wins": 100, "draws": 0, "losses": 0, "score": 1.0, "ci95": [0.9630051925239981, 0.9999999999999999]}
+{"run": "stable", "iter": 40, "sims": 100, "opponent": "minimax-d4", "games": 100, "wins": 49, "draws": 30, "losses": 21, "score": 0.64, "ci95": [0.542352199811621, 0.7272892540950986]}
+{"run": "stable", "iter": 40, "sims": 100, "opponent": "mcts-500", "games": 100, "wins": 62, "draws": 9, "losses": 29, "score": 0.665, "ci95": [0.5679080619801153, 0.749883651552804]}
