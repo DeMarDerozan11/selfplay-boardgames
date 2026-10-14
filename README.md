@@ -32,7 +32,7 @@ self-play (see [Ablations](#ablations-connect-4) and [Limitations](#limitations)
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install --only-binary=:all: -r requirements.txt     # numpy, torch, pytest (pre-built wheels only)
-python -m pytest -q                                      # 43 tests
+python -m pytest -q                                      # 41 tests (2 more run once the external solvers are built)
 
 python scripts/demo.py                                   # play Connect 4 vs the AI at http://127.0.0.1:8000
 python scripts/play_random.py --human                    # console game vs a random player
