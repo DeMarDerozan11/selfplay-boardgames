@@ -5,7 +5,8 @@ trained only by playing against itself), written to run on a laptop CPU. One gen
 games: **Connect 4** (validation game, with an exact solver as ground truth) and **Dobutsu Shogi**
 (どうぶつしょうぎ, a 3x4 shogi variant, the main game).
 
-I am a final-year engineering student; this is my first project on reinforcement learning and tree search.
+Author: Henry Ba, final-year engineering student at ISEP (Paris). This is my first project on reinforcement
+learning and tree search.
 Everything below was measured on a MacBook (Apple Silicon, CPU only, no GPU). Numbers are given with 95%
 confidence intervals, and the limitations are listed explicitly at the end.
 
@@ -252,3 +253,7 @@ models/           trained Connect 4 and Dobutsu Shogi networks
 - Dobutsu Shogi rules: [Japanese Wikipedia](https://ja.wikipedia.org/wiki/どうぶつしょうぎ) and
   [English Wikipedia](https://en.wikipedia.org/wiki/D%C5%8Dbutsu_sh%C5%8Dgi). The game was invented by
   Madoka Kitao.
+
+## License
+
+MIT (see `LICENSE`). The external Connect 4 solver is AGPL-3.0 and is not part of this repository.
